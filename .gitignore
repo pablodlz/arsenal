@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# Never commit anything that names a target or carries engagement data.
+# ---------------------------------------------------------------------------
+# target-substituted wordlists (the templates use <vendor>/<Object> placeholders)
+wordlists/*.local.txt
+wordlists/targets/
+
+# raw output pulled off the testing host
+*.log
+*.har
+*.jsonl
+nuclei-output/
+*.nuclei.json
+
+# credentials / test-account tokens
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+cookies.txt
+
+# ---------------------------------------------------------------------------
+# Build artefacts
+# ---------------------------------------------------------------------------
+burp/build/
+burp/.gradle/
+caido/node_modules/
+caido/dist/
+__pycache__/
+*.pyc
+.venv/
+
+# ---------------------------------------------------------------------------
+# Local tooling / editors / OS
+# ---------------------------------------------------------------------------
+.claude/
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

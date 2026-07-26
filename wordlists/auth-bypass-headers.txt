@@ -1,0 +1,102 @@
+# auth-bypass-headers.txt
+#
+# HTTP request headers that some backends trust as an identity or privilege
+# assertion when they are set by an upstream proxy — and that are worth trying
+# when a resolver or endpoint enforces authorisation somewhere you can't see.
+#
+# Provenance: every entry below was actually sent against a live target during
+# an authorisation investigation on a Relay/GraphQL API (write-up:
+# https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md).
+# None of them worked there. That is the point of publishing the list: the next
+# person enumerates the whole set in one pass instead of rediscovering it over
+# four sessions.
+#
+# Usage: pair with a value that names another principal (a victim user id, or a
+# boolean for the admin flags) and compare the response against the same request
+# with the header absent. Set one at a time first, then in combination — some
+# gateways only honour a header when a companion header is also present.
+#
+# Not a substitute for a real bypass hypothesis. If the check is in the database
+# WHERE clause, none of these will ever fire, and you should be measuring state
+# instead. See the write-up.
+
+# --- identity assertion, generic ---
+User
+X-User
+X-User-Id
+X-UserId
+X-User-ID
+X-Auth-User
+X-Authenticated-User
+X-Original-User
+X-Forwarded-User
+X-Remote-User
+X-Internal-User-Id
+X-Internal-User-ID
+X-Override-User
+X-On-Behalf-Of
+X-Impersonate-User
+X-Act-As
+
+# --- identity assertion, email/subject flavoured ---
+X-User-Email
+X-Auth-Request-Email
+X-Forwarded-Email
+X-Auth-Subject
+X-Subject
+
+# --- tenancy / org assertion (cross-tenant read attempts) ---
+X-Org-Id
+X-Organization-Id
+X-Tenant-Id
+X-Tenant
+X-Account-Id
+X-Workspace-Id
+X-Customer-Id
+
+# --- privilege / role assertion ---
+X-Admin
+X-Is-Admin
+X-Internal
+X-Internal-Request
+X-Role
+X-Roles
+X-Scope
+X-Scopes
+X-Permissions
+X-Privileged
+X-Superuser
+X-Staff
+
+# --- vendor-namespaced admin flags ---
+# Replace <vendor> with the target's own product slug — these only ever exist
+# in first-party middleware, so the namespace is the target's, not a standard.
+X-<vendor>-Admin
+X-<vendor>-Internal
+X-<vendor>-Staff
+X-<vendor>-User-Id
+
+# --- origin spoofing / IP allowlist bypass ---
+X-Forwarded-For
+X-Originating-IP
+X-Remote-IP
+X-Remote-Addr
+X-Client-IP
+X-Real-IP
+True-Client-IP
+CF-Connecting-IP
+Forwarded
+
+# --- gateway / trust-boundary confusion ---
+X-Forwarded-Host
+X-Forwarded-Server
+X-Original-URL
+X-Rewrite-URL
+X-Envoy-Internal
+X-Envoy-Original-Path
+X-Kong-Request-Id
+X-Traefik-Internal
+X-Gateway-Auth
+X-Auth-Token-Verified
+X-Authentication-Status
+X-Auth-Request-Redirect

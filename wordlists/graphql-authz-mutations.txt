@@ -1,0 +1,139 @@
+# graphql-authz-mutations.txt
+#
+# Mutation names to probe when a GraphQL schema hides its privileged operations
+# from introspection, or when introspection is disabled entirely.
+#
+# Why this list exists: on a real target I burned a session guessing at
+# admin-flavoured mutations one at a time (adminDeleteAddress, forceDeleteAddress,
+# ...) — all absent. The useful signal was not any single name, it was that the
+# error message distinguishes "field doesn't exist" from "field exists, wrong
+# arguments". Enumerate the whole list, then read the error taxonomy:
+#
+#   "Cannot query field 'x' on type 'Mutation'"  -> does not exist
+#   "Unknown argument 'y' on field 'x'"          -> EXISTS, keep going
+#   "Field 'x' argument 'y' of type 'ID!' is required" -> EXISTS, signature leaked
+#
+# That second and third response are how you map a schema you can't introspect.
+# Write-up: https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md
+#
+# Substitute the target's own object nouns for <Object> — Address, PaymentMethod,
+# Shipment, Invoice, ApiKey, Member, Team, Webhook, Integration.
+
+# --- privilege-prefixed variants of any mutation ---
+admin<Object>
+adminCreate<Object>
+adminUpdate<Object>
+adminDelete<Object>
+adminGet<Object>
+adminList<Object>
+internal<Object>
+internalUpdate<Object>
+internalDelete<Object>
+force<Object>
+forceCreate<Object>
+forceUpdate<Object>
+forceDelete<Object>
+super<Object>
+system<Object>
+staffUpdate<Object>
+staffDelete<Object>
+bypass<Object>
+override<Object>
+unsafe<Object>
+
+# --- impersonation / session ---
+impersonate
+impersonateUser
+startImpersonation
+stopImpersonation
+assumeUser
+assumeRole
+switchUser
+switchAccount
+switchOrganization
+loginAs
+sudo
+elevatePrivileges
+grantRole
+assignRole
+revokeRole
+setRole
+setPermissions
+addPermission
+
+# --- default / primary flag mutations (frequently missing authz) ---
+setDefault<Object>
+makeDefault<Object>
+setPrimary<Object>
+makePrimary<Object>
+setActive<Object>
+promote<Object>
+reorder<Object>s
+sort<Object>s
+
+# --- ownership transfer (high value, often unguarded) ---
+transfer<Object>
+transferOwnership
+changeOwner
+setOwner
+reassign<Object>
+move<Object>ToAccount
+move<Object>ToOrganization
+link<Object>
+attach<Object>
+detach<Object>
+
+# --- cross-entity binders (the classic two-ID IDOR shape) ---
+# any mutation taking two IDs from different tenants is worth a hard look
+update<Object>Address
+updateShipmentAddress
+setShippingAddress
+attachPaymentMethod
+setPaymentMethod
+assign<Object>To<Object>
+add<Object>To<Object>
+remove<Object>From<Object>
+invite<Object>
+addMember
+removeMember
+addTeamMember
+inviteToOrganization
+
+# --- credential / secret surfaces ---
+createApiKey
+rotateApiKey
+revealApiKey
+showSecret
+regenerateSecret
+createPersonalAccessToken
+createServiceAccount
+resetPassword
+setPassword
+changeEmail
+setEmail
+verifyEmail
+setPhoneNumber
+disableMfa
+resetMfa
+removeMfa
+
+# --- destructive / state (test last, and only in scope) ---
+delete<Object>
+bulkDelete<Object>s
+purge<Object>
+restore<Object>
+archive<Object>
+unarchive<Object>
+cancel<Object>
+refund<Object>
+void<Object>
+
+# --- webhook / integration (SSRF-adjacent) ---
+createWebhook
+updateWebhook
+testWebhook
+sendTestEvent
+createIntegration
+updateIntegrationUrl
+setCallbackUrl
+setRedirectUri

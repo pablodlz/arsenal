@@ -1,0 +1,151 @@
+id: graphql-phantom-success
+
+info:
+  name: GraphQL Mutation Phantom Success (rows_affected blindness)
+  author: pablodlz
+  severity: info
+  description: |
+    Detects GraphQL mutations that return their success payload shape for an
+    object ID that cannot possibly exist, indicating the resolver never inspects
+    how many rows its statement affected.
+
+    This is not an authorisation bypass on its own — in the case that motivated
+    the template, ownership was correctly enforced in the SQL WHERE clause. The
+    finding is that the API is an unreliable oracle: a valid foreign ID and a
+    syntactically impossible one produce identical responses, so a mutation
+    response cannot be used to confirm or deny a state change.
+
+    Report value is twofold. As a defect it is a low-severity API contract issue
+    (the API lies to its own client about whether anything happened). As
+    reconnaissance it is far more useful: once you see it, stop confirming IDOR
+    from mutation responses on this codebase and start confirming from an
+    independent read of the target's state.
+  impact: |
+    Clients cannot distinguish a successful mutation from a no-op. Any UI or
+    integration that branches on the absence of an error will report success for
+    operations that changed nothing. For a tester, it invalidates the mutation
+    response as an authorisation oracle and produces false-positive IDOR reports.
+  remediation: |
+    Have the resolver check the affected row count and return an explicit
+    not-found or not-permitted error when it is zero. Distinguish the two only if
+    your threat model allows the enumeration that distinction enables.
+  reference:
+    - https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md
+    - https://github.com/pablodlz/graphql-authz-lab
+    - https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html
+  metadata:
+    verified: false
+    max-request: 3
+    shodan-query: html:"graphql"
+  tags: graphql,authz,idor,logic,oracle,misconfig
+
+http:
+  # Stage 1 — confirm a live GraphQL endpoint even with introspection disabled.
+  - raw:
+      - |
+        POST {{path}} HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"query":"{__typename}"}
+
+    payloads:
+      path:
+        - "/graphql"
+        - "/api/graphql"
+        - "/gql"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"__typename"'
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        name: endpoint
+        part: path
+        group: 1
+        regex:
+          - '(/[a-z/]*graphql|/gql)'
+        internal: true
+
+  # Stage 2 — the differential. Send the same mutation twice: once with an ID
+  # that is structurally impossible, once with a differently impossible ID.
+  # A resolver that authorises properly should reject or error on both. One that
+  # is rows_affected-blind answers with its success payload for both, and the two
+  # responses are byte-identical apart from tracing headers.
+  #
+  # {{mutation}} and {{field}} must be set for the target's schema. Defaults
+  # cover the common Relay object naming; override with:
+  #   nuclei -t graphql-phantom-success.yaml -var mutation=deleteAddress -var field=error
+  - raw:
+      - |
+        POST {{endpoint}} HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"query":"mutation { {{mutation}}(id: \"{{impossible_id}}\") { {{field}} { detail } } }"}
+
+    payloads:
+      impossible_id:
+        # base64("Address:0"), base64("Address:-1"), and raw garbage.
+        # None of these can name a real row in any tenant.
+        - "QWRkcmVzczow"
+        - "QWRkcmVzczotMQ=="
+        - "nuclei-phantom-probe-0000"
+
+    attack: batteringram
+
+    variables:
+      mutation: "deleteAddress"
+      field: "error"
+
+    matchers-condition: and
+    matchers:
+      # success payload present...
+      - type: word
+        part: body
+        words:
+          - '"{{mutation}}"'
+          - '"detail"'
+        condition: and
+
+      # ...with the error slot explicitly empty: the phantom signature.
+      - type: regex
+        part: body
+        regex:
+          - '"detail"\s*:\s*null'
+          - '"errors"\s*:\s*\[\s*\]'
+        condition: or
+
+      # and no genuine rejection anywhere in the response
+      - type: word
+        part: body
+        words:
+          - "Cannot query field"
+          - "Unknown argument"
+          - "not found"
+          - "does not exist"
+          - "Not Found"
+          - "forbidden"
+          - "Forbidden"
+          - "unauthorized"
+          - "Unauthorized"
+          - "permission"
+          - "Permission denied"
+        negative: true
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: dsl
+        dsl:
+          - '"phantom success: " + mutation + " accepted impossible id " + impossible_id + " and returned an empty error slot"'

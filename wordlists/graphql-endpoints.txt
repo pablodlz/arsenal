@@ -1,0 +1,82 @@
+# graphql-endpoints.txt
+#
+# Paths to probe when the known GraphQL endpoint is protected but a second,
+# forgotten one is not. On a real target the primary API sat behind Cloudflare
+# while a dev host answered unfiltered — until it didn't, mid-investigation.
+# Alternate endpoints on the *same* host are the cheaper version of that.
+#
+# Provenance: the /graphql, /api/graphql, /gql and versioned variants below were
+# probed live (all 404 on that target). The rest are the standard surface across
+# Apollo, Hasura, Relay, Graphene, Strawberry, WPGraphQL and Shopify-style APIs.
+# Write-up: https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md
+#
+# Probe with POST {"query":"{__typename}"} — a 200 with data.__typename confirms
+# a live endpoint even when introspection is disabled. Then try GET with
+# ?query={__typename}, since GET is frequently exempt from the CSRF and
+# content-type checks applied to POST.
+
+graphql
+graphql/
+graphiql
+graphql/console
+graphql/graphiql
+graphql/schema
+graphql/schema.json
+graphql/v1
+graphql/v2
+graphql-devtools
+gql
+gql/
+query
+api/graphql
+api/gql
+api/query
+api/v1/graphql
+api/v2/graphql
+api/v3/graphql
+api/graphql/v1
+api/graphql/v2
+api/public/graphql
+api/private/graphql
+api/internal/graphql
+v1/graphql
+v2/graphql
+v1/gql
+public/graphql
+private/graphql
+internal/graphql
+admin/graphql
+admin/api/graphql
+graphql/admin
+graphql/internal
+graphql/public
+graphql/private
+_graphql
+.graphql
+__graphql
+altair
+playground
+graphql/playground
+apollo
+apollo/graphql
+hasura/v1/graphql
+v1/relay
+index.php?graphql
+graphql.php
+graphql.json
+data/graphql
+services/graphql
+services/api/graphql
+backend/graphql
+bff/graphql
+gateway/graphql
+proxy/graphql
+subscriptions
+graphql/subscriptions
+graphql/ws
+graphql-ws
+graphql/stream
+wp/graphql
+wp-json/graphql
+shop/api/graphql
+storefront/api/graphql

@@ -1,0 +1,10 @@
+{
+  "name": "arsenal-phantom-caido",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Caido plugin: flags GraphQL mutations whose response is not an authorisation oracle",
+  "scripts": {
+    "test": "node --test src/*.test.js"
+  }
+}
