@@ -1,7 +1,7 @@
 /**
  * node --test src/detect.test.js
  *
- * Fixtures are real response shapes captured from graphql-authz-lab in both
+ * Fixtures are real response shapes captured from labs/graphql-authz in both
  * modes, so the tests pin the detector against behaviour that actually exists.
  */
 

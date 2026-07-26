@@ -3,7 +3,7 @@
  * authorisation oracle.
  *
  * The detection logic lives in ./detect.js so it can be unit-tested without
- * Caido (`npm test`, 17 cases pinned against real graphql-authz-lab responses).
+ * Caido (`npm test`, 17 cases pinned against real labs/graphql-authz responses).
  * This file is only the binding.
  *
  * Caido's plugin SDK surface has moved between releases. If `init` does not fire

@@ -16,7 +16,7 @@ where a session gets burned.
 | [`caido/`](caido/) | Caido plugin, same detection, unit-tested |
 
 Companion repos: [**writeups**](https://github.com/pablodlz/writeups) for the research,
-[**graphql-authz-lab**](https://github.com/pablodlz/graphql-authz-lab) for a target to test
+[**labs**](https://github.com/pablodlz/labs) for a target to test
 against, [**subdomain-takeover-poc**](https://github.com/pablodlz/subdomain-takeover-poc) for
 dangling-DNS findings.
 
@@ -93,7 +93,7 @@ SDK binding so it can be tested without Caido:
 cd caido && npm test     # 17 tests
 ```
 
-Fixtures are real response shapes captured from `graphql-authz-lab` in both modes, so the tests
+Fixtures are real response shapes captured from `labs/graphql-authz` in both modes, so the tests
 pin behaviour that actually exists rather than what I imagined.
 
 ---
@@ -105,9 +105,9 @@ claim worth making vaguely:
 
 | component | status |
 | --- | --- |
-| `scripts/phantom-probe.py` | **Executed** against `graphql-authz-lab` in both modes and against an unknown mutation. All three verdicts and exit codes confirmed. |
+| `scripts/phantom-probe.py` | **Executed** against `labs/graphql-authz` in both modes and against an unknown mutation. All three verdicts and exit codes confirmed. |
 | `caido/src/detect.js` | **17/17 unit tests passing** on Node 24. |
-| `graphql-authz-lab` fixtures | **Executed** — the phantom response and the `--fixed` behaviour are both reproduced. |
+| `labs/graphql-authz` fixtures | **Executed** — the phantom response and the `--fixed` behaviour are both reproduced. |
 | `nuclei/graphql-phantom-success.yaml` | **YAML-validated**, matchers reviewed against the lab's real responses. **Not** executed by `nuclei` itself — no binary on my current machine. Treat the matcher tuning as unproven until you run it. |
 | `burp/` | **Not compiled.** No JDK on my current machine. The Montoya imports and `ScanCheck` contract are written against the 2025.x API and reviewed by hand, but expect to fix a signature on first build. |
 

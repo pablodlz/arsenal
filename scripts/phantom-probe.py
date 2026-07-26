@@ -25,7 +25,7 @@ Standard library only. Read-only by intent: it never sends an id that can name a
 real row unless you pass --foreign-id yourself.
 
 Background: https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md
-Lab to try it against: https://github.com/pablodlz/graphql-authz-lab
+Lab to try it against: https://github.com/pablodlz/labs/tree/main/graphql-authz
 """
 
 from __future__ import annotations

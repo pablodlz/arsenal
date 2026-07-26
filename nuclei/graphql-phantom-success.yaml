@@ -31,7 +31,7 @@ info:
     your threat model allows the enumeration that distinction enables.
   reference:
     - https://github.com/pablodlz/writeups/blob/main/web/graphql-phantom-success.md
-    - https://github.com/pablodlz/graphql-authz-lab
+    - https://github.com/pablodlz/labs/tree/main/graphql-authz
     - https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html
   metadata:
     verified: false
