@@ -1,4 +1,16 @@
-# arsenal
+<div align="center">
+
+# 🗡️ arsenal
+
+**Detection and tooling from real bug bounty work — the through-line is oracle discipline.**
+
+![License: MIT](https://img.shields.io/badge/License-MIT-00B2DF?style=flat-square)
+![Surfaces](https://img.shields.io/badge/-Burp%20·%20Caido%20·%20nuclei-2b6cb0?style=flat-square)
+![Discipline](https://img.shields.io/badge/through--line-oracle%20discipline-8e44ad?style=flat-square)
+
+</div>
+
+---
 
 Detection and tooling that came out of my own bug bounty work. Every item here exists because I
 needed it on a real target, not because the category looked good on a profile.
